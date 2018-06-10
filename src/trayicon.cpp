@@ -1,11 +1,14 @@
 #include "trayicon.h"
 #include <QCoreApplication>
+#include <QDebug>
 #include <QIcon>
 #include <QPixmap>
 
 TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   this->autostart = false;
+  this->ticks = 0;
   restoreSettings();
+  setupStates();
   setupTimer();
   setupMenu(parent);
   setupTrayIcon();
@@ -21,12 +24,34 @@ void TrayIcon::restoreSettings() {
   this->autostart = settings.value("autostart", false).toBool();
 }
 
-void TrayIcon::setupTimer() { timer = new QTimer(this); }
+void TrayIcon::setupStates() {
+  states[State::ShortBreak] = &this->sbreak;
+  states[State::LongBreak] = &this->lbreak;
+  states[State::WorkTime] = &this->work;
+}
+
+void TrayIcon::setupTimer() {
+  timer = new QTimer(this);
+  connect(timer, &QTimer::timeout, this, &TrayIcon::tick);
+  if (this->autostart) {
+    resetTimer();
+  }
+}
 
 void TrayIcon::setupMenu(QWidget *parent) {
+  timeLabel = new QLabel("00:00");
+  showTime = new QWidgetAction(this);
+  showTime->setDefaultWidget(timeLabel);
+
+  if (this->autostart) {
+    trayIconMenu->addAction(showTime);
+  }
+
   trayIconMenu = new QMenu(parent);
-  QIcon::fromTheme("media-playback-pause"),
-      workTimeMenuItem = new QAction(tr("Work time"), this);
+
+  workTimeMenuItem = new QAction(tr("Work time"), this);
+  connect(workTimeMenuItem, &QAction::triggered, this,
+          &TrayIcon::startWorkTime);
   trayIconMenu->addAction(workTimeMenuItem);
 
   shortBreakMenuItem = new QAction(tr("Short break"), this);
@@ -59,10 +84,33 @@ void TrayIcon::setupMenu(QWidget *parent) {
   trayIconMenu->addAction(quitMenuItem);
 }
 
+void TrayIcon::tick() {
+
+  qDebug() << "A second elapsed";
+  resetTimer();
+}
+
 void TrayIcon::setupTrayIcon() {
   this->setIcon(
       QIcon::fromTheme("tomate", QPixmap(":/icons/src/assets/tomate.svg")));
   this->setContextMenu(trayIconMenu);
 }
+
+void TrayIcon::resetTimer() {
+  if (this->timer->isActive()) {
+    this->timer->stop();
+  }
+  this->ticks = 0;
+  timer->start(1000);
+}
+
+void TrayIcon::startWorkTime() {
+  this->setState(State::WorkTime);
+  resetTimer();
+}
+
+TrayIcon::State TrayIcon::state() const { return this->m_state; }
+
+void TrayIcon::setState(State state) { this->m_state = state; }
 
 TrayIcon::~TrayIcon() {}

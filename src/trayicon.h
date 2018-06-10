@@ -2,18 +2,30 @@
 #define TRAYICON_H
 
 #include <QAction>
+#include <QLabel>
+#include <QMap>
 #include <QMenu>
+#include <QPointer>
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QTimer>
 #include <QWidget>
+#include <QWidgetAction>
 
 class TrayIcon : public QSystemTrayIcon {
   Q_OBJECT
-
+  Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
 public:
   TrayIcon(QWidget *parent = 0);
+
+  enum State { ShortBreak, LongBreak, WorkTime };
+  Q_ENUM(State)
+  State state() const;
+
   ~TrayIcon();
+
+signals:
+  void stateChanged(State state);
 
 private:
   // Methods
@@ -27,8 +39,7 @@ private:
   void setupTrayIcon();
 
   /**
-   * @brief setupMenu
-   *    Setup menu with options
+   * @brief setupMenu Setup menu with options
    *
    * Method that is called on the constructor of the class thats setups the
    * connections of the menu with the actions: ~Work time ~Short break ~Long
@@ -37,8 +48,7 @@ private:
   void setupMenu(QWidget *parent);
 
   /**
-   * @brief setupTimer
-   *    Setup the main timer
+   * @brief setupTimer Setup the main timer
    *
    * Instantiate the main timer, depending on the autostart settings, it starts
    * it based on the current cycle
@@ -46,18 +56,54 @@ private:
   void setupTimer();
 
   /**
-   * @brief restoreSettings
-   *    Loads the user settings into the program or set the default values
+   * @brief restoreSettings Loads the user settings into the program or set the
+   * default values
    */
   void restoreSettings();
+
+  /**
+   * @brief setState Set the current state of the timer
+   * @param state New state of the timer
+   *
+   * Sets the property state of the the class which indicates the time to reset
+   * the timer to
+   */
+  void setState(State state);
+
+  /**
+   * @brief setupStates Setup the values of the timer statuses
+   */
+  void setupStates();
+
+  /**
+   * @brief tick Runs every time the timer timeouts
+   *
+   * Updates the visualization of the time, ticks (increments) the ticks
+   * property
+   */
+  void tick();
+
+  /**
+   * @brief startWorkTime starts the timer for a work time
+   */
+  void startWorkTime();
+
+  /**
+   * @brief Checks if the timer is running, if it is it resets with new values
+   */
+  void resetTimer();
 
   // Properties
   QMenu *trayIconMenu;
   QAction *workTimeMenuItem, *shortBreakMenuItem, *longBreakMenuItem,
       *pauseMenuItem, *stopMenuItem, *settingsMenuItem, *quitMenuItem;
+  QWidgetAction *showTime;
+  QLabel *timeLabel;
   QTimer *timer;
   QSettings settings;
-  int work, sbreak, lbreak, sbreakCycles, earlySeconds;
+  State m_state;
+  QMap<State, int *> states;
+  int work, sbreak, lbreak, sbreakCycles, earlySeconds, ticks;
   bool early, autostart;
 };
 
