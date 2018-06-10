@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Settings</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="tomate" resource="../assets.qrc">
+    <normaloff>:/icons/src/assets/tomate.svg</normaloff>:/icons/src/assets/tomate.svg</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QGroupBox" name="settingsgbox">
@@ -40,6 +44,9 @@
           <property name="suffix">
            <string>min</string>
           </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
           <property name="maximum">
            <number>60</number>
           </property>
@@ -62,6 +69,12 @@
          <widget class="QSpinBox" name="sbreakSpinBox">
           <property name="suffix">
            <string>min</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>15</number>
           </property>
           <property name="value">
            <number>5</number>
@@ -90,6 +103,9 @@
           <property name="suffix">
            <string>min</string>
           </property>
+          <property name="maximum">
+           <number>60</number>
+          </property>
           <property name="value">
            <number>15</number>
           </property>
@@ -98,7 +114,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="toolTip">
-           <string>Set the short break time in minutes, each time a work period is complete you will have a break, either long or short depending on your settings</string>
+           <string>If you wish to receive a notification before the work time is over specify the time in seconds that you want your early notification</string>
           </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Early&lt;br&gt;notification&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -106,25 +122,75 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="earlynotifySpinBox">
-          <property name="toolTip">
-           <string>If you wish to receive a notification before the work time is over specify the time in seconds that you want your early notification</string>
-          </property>
-          <property name="suffix">
-           <string>sec</string>
-          </property>
-          <property name="value">
-           <number>60</number>
-          </property>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QSpinBox" name="earlynotifySpinBox">
+            <property name="toolTip">
+             <string>If you wish to receive a notification before the work time is over specify the time in seconds that you want your early notification</string>
+            </property>
+            <property name="suffix">
+             <string>sec</string>
+            </property>
+            <property name="maximum">
+             <number>300</number>
+            </property>
+            <property name="value">
+             <number>60</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="sbreaksnumberLabel">
+          <property name="toolTip">
+           <string>Set the times you want to have work/shortbreak cycles before a long break</string>
+          </property>
+          <property name="text">
+           <string>Short breaks</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="sbreaknumberSpinBox">
+          <property name="toolTip">
+           <string>Set the times you want to have work/shortbreak cycles before a long break</string>
+          </property>
+          <property name="suffix">
+           <string/>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>10</number>
+          </property>
+          <property name="value">
+           <number>4</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
       <item>
-       <spacer name="verticalSpacer">
+       <spacer name="verticalSpacer_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -142,6 +208,8 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../assets.qrc"/>
+ </resources>
  <connections/>
 </ui>

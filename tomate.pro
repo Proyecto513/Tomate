@@ -29,10 +29,12 @@ CONFIG += c++11
 
 SOURCES += \
         src/main.cpp \
-        src/settings.cpp
+        src/settings.cpp \
+        src/trayicon.cpp
 
 HEADERS += \
-        src/settings.h
+        src/settings.h \
+        src/trayicon.h
 
 FORMS += \
         src/settings.ui
