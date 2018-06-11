@@ -29,15 +29,17 @@ CONFIG += c++11
 
 SOURCES += \
         src/main.cpp \
-        src/settings.cpp \
-        src/trayicon.cpp
+        src/trayicon.cpp \
+        src/timer.cpp \
+        src/settings.cpp
 
 HEADERS += \
-        src/settings.h \
-        src/trayicon.h
+        src/trayicon.h \
+        src/timer.h \
+        src/settings.h
 
 FORMS += \
-        src/settings.ui
+    src/settings.ui
 
 RESOURCES += \
-    assets.qrc
+    src/assets.qrc

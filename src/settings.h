@@ -1,21 +1,35 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <QCloseEvent>
 #include <QDialog>
+#include <QSettings>
 
 namespace Ui {
-class settings;
+class Settings;
 }
 
-class settings : public QDialog {
+class Settings : public QDialog {
   Q_OBJECT
 
+signals:
+  void terminated();
+
 public:
-  explicit settings(QWidget *parent = 0);
-  ~settings();
+  explicit Settings(QWidget *parent = 0);
+  void accept();
+  void done(int r);
+  int exec();
+  void open();
+  void reject();
+  ~Settings();
 
 private:
-  Ui::settings *ui;
+  void closeEvent(QCloseEvent *event);
+
+  QSettings usersettings;
+  void setupSettings();
+  Ui::Settings *ui;
 };
 
 #endif // SETTINGS_H

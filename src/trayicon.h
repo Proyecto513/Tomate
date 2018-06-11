@@ -1,6 +1,7 @@
 #ifndef TRAYICON_H
 #define TRAYICON_H
 
+#include "timer.h"
 #include <QAction>
 #include <QLabel>
 #include <QMap>
@@ -8,7 +9,6 @@
 #include <QPointer>
 #include <QSettings>
 #include <QSystemTrayIcon>
-#include <QTimer>
 #include <QWidget>
 #include <QWidgetAction>
 
@@ -89,9 +89,16 @@ private:
   void startWorkTime();
 
   /**
-   * @brief Checks if the timer is running, if it is it resets with new values
+   * @brief openSettings Creates and shows a new instance of the settings dialog
+   * window
    */
-  void resetTimer();
+  void openSettings();
+
+  /**
+   * @brief early
+   * @return if value of earlySeconds is greater than zero
+   */
+  bool early();
 
   // Properties
   QMenu *trayIconMenu;
@@ -99,12 +106,12 @@ private:
       *pauseMenuItem, *stopMenuItem, *settingsMenuItem, *quitMenuItem;
   QWidgetAction *showTime;
   QLabel *timeLabel;
-  QTimer *timer;
+  Timer *timer;
   QSettings settings;
   State m_state;
   QMap<State, int *> states;
   int work, sbreak, lbreak, sbreakCycles, earlySeconds, ticks;
-  bool early, autostart;
+  bool autostart;
 };
 
 #endif // TRAYICON_H

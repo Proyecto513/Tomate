@@ -1,4 +1,5 @@
 #include "trayicon.h"
+#include "settings.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QIcon>
@@ -20,7 +21,6 @@ void TrayIcon::restoreSettings() {
   this->lbreak = settings.value("longbreak", 15).toInt();
   this->earlySeconds = settings.value("earlyseconds", 60).toInt();
   this->sbreakCycles = settings.value("breakcycles", 4).toInt();
-  this->early = settings.value("early", true).toBool();
   this->autostart = settings.value("autostart", false).toBool();
 }
 
@@ -31,10 +31,10 @@ void TrayIcon::setupStates() {
 }
 
 void TrayIcon::setupTimer() {
-  timer = new QTimer(this);
-  connect(timer, &QTimer::timeout, this, &TrayIcon::tick);
+  timer = new Timer(this);
+  connect(timer, &Timer::timeout, this, &TrayIcon::tick);
   if (this->autostart) {
-    resetTimer();
+    timer->resetTimer();
   }
 }
 
@@ -76,6 +76,7 @@ void TrayIcon::setupMenu(QWidget *parent) {
 
   settingsMenuItem =
       new QAction(QIcon::fromTheme("preferences-other"), tr("Settings"), this);
+  connect(settingsMenuItem, &QAction::triggered, this, &TrayIcon::openSettings);
   trayIconMenu->addAction(settingsMenuItem);
 
   quitMenuItem =
@@ -85,9 +86,11 @@ void TrayIcon::setupMenu(QWidget *parent) {
 }
 
 void TrayIcon::tick() {
-
+  if (++ticks == 60) {
+    qDebug() << "A minute elapsed";
+  }
   qDebug() << "A second elapsed";
-  resetTimer();
+  timer->resetTimer();
 }
 
 void TrayIcon::setupTrayIcon() {
@@ -96,18 +99,19 @@ void TrayIcon::setupTrayIcon() {
   this->setContextMenu(trayIconMenu);
 }
 
-void TrayIcon::resetTimer() {
-  if (this->timer->isActive()) {
-    this->timer->stop();
-  }
-  this->ticks = 0;
-  timer->start(1000);
-}
-
 void TrayIcon::startWorkTime() {
   this->setState(State::WorkTime);
-  resetTimer();
+  this->ticks = 0;
+  timer->resetTimer();
 }
+
+void TrayIcon::openSettings() {
+  Settings *sw = new Settings();
+  sw->show();
+  qDebug() << "After settings";
+}
+
+bool TrayIcon::early() { return this->earlySeconds > 0; }
 
 TrayIcon::State TrayIcon::state() const { return this->m_state; }
 
