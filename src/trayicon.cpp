@@ -95,7 +95,7 @@ void TrayIcon::tick() {
 
 void TrayIcon::setupTrayIcon() {
   this->setIcon(
-      QIcon::fromTheme("tomate", QPixmap(":/icons/src/assets/tomate.svg")));
+      QIcon::fromTheme("tomate", QPixmap(":/icons/assets/tomate.svg")));
   this->setContextMenu(trayIconMenu);
 }
 
