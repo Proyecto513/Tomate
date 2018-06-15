@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/icons">
         <file>assets/tomate.svg</file>
+        <file>assets/tomate-light.svg</file>
+        <file>assets/tomate-dark.svg</file>
+        <file>assets/tomate-color.svg</file>
     </qresource>
 </RCC>

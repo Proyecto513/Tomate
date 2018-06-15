@@ -11,3 +11,5 @@ void Timer::resetTimer() {
   }
   timer->start(1000);
 }
+
+bool Timer::isRunning() { return this->timer->isActive(); }

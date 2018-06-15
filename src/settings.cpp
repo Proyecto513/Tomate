@@ -1,8 +1,8 @@
 #include "settings.h"
 #include "ui_settings.h"
-
 Settings::Settings(QWidget *parent) : QDialog(parent), ui(new Ui::Settings) {
   ui->setupUi(this);
+  setupSettings();
 }
 
 void Settings::setupSettings() {
@@ -31,6 +31,7 @@ void Settings::accept() {
   usersettings.setValue("earlyseconds", this->ui->earlynotifySpinBox->value());
   usersettings.setValue("breakcycles", this->ui->sbreaknumberSpinBox->value());
   usersettings.setValue("autostart", this->ui->autostartCheckBox->isChecked());
+  this->hide();
 }
 
 void Settings::done(int r) {}

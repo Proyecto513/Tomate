@@ -1,6 +1,7 @@
 #include "trayicon.h"
 #include "settings.h"
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QDebug>
 #include <QIcon>
 #include <QPixmap>
@@ -8,10 +9,13 @@
 TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   this->autostart = false;
   this->ticks = 0;
+  this->secondsElapsed = 0;
+  this->m_state = State::WorkTime;
   restoreSettings();
   setupStates();
   setupTimer();
   setupMenu(parent);
+  checkCurrentTimerItem();
   setupTrayIcon();
 }
 
@@ -39,25 +43,30 @@ void TrayIcon::setupTimer() {
 }
 
 void TrayIcon::setupMenu(QWidget *parent) {
-  timeLabel = new QLabel("00:00");
-  showTime = new QWidgetAction(this);
-  showTime->setDefaultWidget(timeLabel);
+  trayIconMenu = new QMenu(parent);
 
+  showTime = new QAction("00:00");
+  showTime->setEnabled(false);
   if (this->autostart) {
     trayIconMenu->addAction(showTime);
   }
 
-  trayIconMenu = new QMenu(parent);
-
   workTimeMenuItem = new QAction(tr("Work time"), this);
   connect(workTimeMenuItem, &QAction::triggered, this,
           &TrayIcon::startWorkTime);
+  workTimeMenuItem->setCheckable(true);
   trayIconMenu->addAction(workTimeMenuItem);
 
   shortBreakMenuItem = new QAction(tr("Short break"), this);
+  connect(shortBreakMenuItem, &QAction::triggered, this,
+          &TrayIcon::startShortBreak);
+  shortBreakMenuItem->setCheckable(true);
   trayIconMenu->addAction(shortBreakMenuItem);
 
   longBreakMenuItem = new QAction(tr("Long break"), this);
+  connect(longBreakMenuItem, &QAction::triggered, this,
+          &TrayIcon::startLongBreak);
+  longBreakMenuItem->setCheckable(true);
   trayIconMenu->addAction(longBreakMenuItem);
 
   trayIconMenu->addSeparator();
@@ -86,21 +95,40 @@ void TrayIcon::setupMenu(QWidget *parent) {
 }
 
 void TrayIcon::tick() {
+  secondsElapsed = (*(states[m_state]) * 60) - ticks;
   if (++ticks == 60) {
     qDebug() << "A minute elapsed";
   }
   qDebug() << "A second elapsed";
+  showTime->setText(
+      QDateTime::fromTime_t(secondsElapsed).toUTC().toString("mm:ss"));
+  qDebug() << showTime->text();
   timer->resetTimer();
 }
 
 void TrayIcon::setupTrayIcon() {
   this->setIcon(
-      QIcon::fromTheme("tomate", QPixmap(":/icons/assets/tomate.svg")));
+      QIcon::fromTheme("tomate", QPixmap(":/icons/assets/tomato-color.svg")));
   this->setContextMenu(trayIconMenu);
 }
 
 void TrayIcon::startWorkTime() {
   this->setState(State::WorkTime);
+  this->checkCurrentTimerItem();
+  this->ticks = 0;
+  timer->resetTimer();
+}
+
+void TrayIcon::startShortBreak() {
+  this->setState(State::ShortBreak);
+  this->checkCurrentTimerItem();
+  this->ticks = 0;
+  timer->resetTimer();
+}
+
+void TrayIcon::startLongBreak() {
+  this->setState(State::LongBreak);
+  this->checkCurrentTimerItem();
   this->ticks = 0;
   timer->resetTimer();
 }
@@ -111,10 +139,40 @@ void TrayIcon::openSettings() {
   qDebug() << "After settings";
 }
 
+void TrayIcon::resetTimerProperties(bool resetTicks) {
+  if (resetTicks) {
+    this->ticks = 0;
+  }
+}
+
 bool TrayIcon::early() { return this->earlySeconds > 0; }
 
 TrayIcon::State TrayIcon::state() const { return this->m_state; }
 
 void TrayIcon::setState(State state) { this->m_state = state; }
+
+void TrayIcon::checkCurrentTimerItem() {
+  workTimeMenuItem->setChecked(false);
+  shortBreakMenuItem->setChecked(false);
+  longBreakMenuItem->setChecked(false);
+
+  if (!timer->isRunning()) {
+    return;
+  }
+
+  switch (this->m_state) {
+  case TrayIcon::WorkTime:
+    workTimeMenuItem->setChecked(true);
+    break;
+  case TrayIcon::ShortBreak:
+    shortBreakMenuItem->setChecked(true);
+    break;
+  case TrayIcon::LongBreak:
+    longBreakMenuItem->setChecked(true);
+    break;
+  default:
+    break;
+  }
+}
 
 TrayIcon::~TrayIcon() {}

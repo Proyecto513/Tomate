@@ -89,6 +89,16 @@ private:
   void startWorkTime();
 
   /**
+   * @brief startShortBreak starts the timer for a short break time
+   */
+  void startShortBreak();
+
+  /**
+   * @brief startLongBreak starts the timer for a long time
+   */
+  void startLongBreak();
+
+  /**
    * @brief openSettings Creates and shows a new instance of the settings dialog
    * window
    */
@@ -100,17 +110,33 @@ private:
    */
   bool early();
 
+  /**
+   * @brief resetTimerProperties Resets to default values all timer related
+   * properties
+   * @param resetTicks True by default, send a False value to avoid resetting
+   * the ticks
+   *
+   * Reset to 0 the ticks and the secondElapsed variables and send the signal to
+   * reset the timer itself
+   */
+  void resetTimerProperties(bool resetTicks = true);
+
+  /**
+   * @brief checkCurrentTimerItem Checks the current timer state and puts a
+   * check mark in the appropriate menu item
+   */
+  void checkCurrentTimerItem();
+
   // Properties
   QMenu *trayIconMenu;
   QAction *workTimeMenuItem, *shortBreakMenuItem, *longBreakMenuItem,
-      *pauseMenuItem, *stopMenuItem, *settingsMenuItem, *quitMenuItem;
-  QWidgetAction *showTime;
-  QLabel *timeLabel;
+      *pauseMenuItem, *stopMenuItem, *settingsMenuItem, *quitMenuItem,
+      *showTime;
   Timer *timer;
   QSettings settings;
   State m_state;
   QMap<State, int *> states;
-  int work, sbreak, lbreak, sbreakCycles, earlySeconds, ticks;
+  int work, sbreak, lbreak, sbreakCycles, earlySeconds, ticks, secondsElapsed;
   bool autostart;
 };
 
