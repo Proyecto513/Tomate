@@ -19,8 +19,20 @@ public:
    */
   bool isRunning();
 
+  /**
+   * @brief stopTimer Stops the timer if its running
+   */
+  void stopTimer();
+
+  /**
+   * @brief togglePauseTimer Starts or stops the timer for a pseudo pause effect
+   * @param pause indicates whether the timer is stopped or not
+   */
+  void togglePauseTimer(bool pause);
+
 signals:
   void timeout();
+  void stateChanged(bool running);
 
 private:
   QTimer *timer;

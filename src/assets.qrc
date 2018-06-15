@@ -5,4 +5,7 @@
         <file>assets/tomate-dark.svg</file>
         <file>assets/tomate-color.svg</file>
     </qresource>
+    <qresource prefix="/sounds">
+        <file>assets/alarm.wav</file>
+    </qresource>
 </RCC>

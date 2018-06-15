@@ -2,14 +2,14 @@
 #include "settings.h"
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QDebug>
 #include <QIcon>
 #include <QPixmap>
 
 TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   this->autostart = false;
   this->ticks = 0;
-  this->secondsElapsed = 0;
+  this->secondsRemaining = 0;
+  this->sbreakCyclesCompleted = 0;
   this->m_state = State::WorkTime;
   restoreSettings();
   setupStates();
@@ -73,11 +73,16 @@ void TrayIcon::setupMenu(QWidget *parent) {
 
   pauseMenuItem =
       new QAction(QIcon::fromTheme("media-playback-pause"), tr("Pause"), this);
+  pauseMenuItem->setCheckable(true);
+  connect(pauseMenuItem, &QAction::toggled, this->timer,
+          &Timer::togglePauseTimer);
   pauseMenuItem->setEnabled(this->autostart);
   trayIconMenu->addAction(pauseMenuItem);
 
   stopMenuItem =
       new QAction(QIcon::fromTheme("media-playback-stop"), tr("Stop"), this);
+  connect(stopMenuItem, &QAction::triggered, this->timer, &Timer::stopTimer);
+  connect(stopMenuItem, &QAction::triggered, this, &TrayIcon::resetCounterView);
   stopMenuItem->setEnabled(this->autostart);
   trayIconMenu->addAction(stopMenuItem);
 
@@ -92,23 +97,25 @@ void TrayIcon::setupMenu(QWidget *parent) {
       new QAction(QIcon::fromTheme("application-exit"), tr("Quit"), this);
   connect(quitMenuItem, &QAction::triggered, this, &QCoreApplication::quit);
   trayIconMenu->addAction(quitMenuItem);
+
+  connect(this->timer, &Timer::stateChanged, this,
+          &TrayIcon::controlsEnabledCheck);
 }
 
 void TrayIcon::tick() {
-  secondsElapsed = (*(states[m_state]) * 60) - ticks;
-  if (++ticks == 60) {
-    qDebug() << "A minute elapsed";
+  secondsRemaining = (*(states[m_state]) * 60) - ticks++;
+  if (secondsRemaining == 0) {
+    QSound::play(":/sounds/assets/alarm.wav");
+    switchTimers();
   }
-  qDebug() << "A second elapsed";
   showTime->setText(
-      QDateTime::fromTime_t(secondsElapsed).toUTC().toString("mm:ss"));
-  qDebug() << showTime->text();
+      QDateTime::fromTime_t(secondsRemaining).toUTC().toString("mm:ss"));
   timer->resetTimer();
 }
 
 void TrayIcon::setupTrayIcon() {
   this->setIcon(
-      QIcon::fromTheme("tomate", QPixmap(":/icons/assets/tomato-color.svg")));
+      QIcon::fromTheme("tomate", QPixmap(":/icons/assets/tomate-color.svg")));
   this->setContextMenu(trayIconMenu);
 }
 
@@ -136,7 +143,6 @@ void TrayIcon::startLongBreak() {
 void TrayIcon::openSettings() {
   Settings *sw = new Settings();
   sw->show();
-  qDebug() << "After settings";
 }
 
 void TrayIcon::resetTimerProperties(bool resetTicks) {
@@ -173,6 +179,29 @@ void TrayIcon::checkCurrentTimerItem() {
   default:
     break;
   }
+}
+
+void TrayIcon::switchTimers() {
+  if (this->state() == TrayIcon::WorkTime) {
+    if (sbreakCyclesCompleted++ == sbreakCycles) {
+      sbreakCyclesCompleted = 0;
+      startLongBreak();
+    } else {
+      startShortBreak();
+    }
+  } else {
+    startWorkTime();
+  }
+}
+
+void TrayIcon::controlsEnabledCheck(bool running) {
+  this->pauseMenuItem->setEnabled(running);
+  this->pauseMenuItem->setEnabled(running);
+}
+
+void TrayIcon::resetCounterView() {
+  showTime->setText("00:00");
+  checkCurrentTimerItem();
 }
 
 TrayIcon::~TrayIcon() {}

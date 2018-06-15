@@ -3,14 +3,12 @@
 
 #include "timer.h"
 #include <QAction>
-#include <QLabel>
 #include <QMap>
 #include <QMenu>
-#include <QPointer>
 #include <QSettings>
+#include <QSound>
 #include <QSystemTrayIcon>
 #include <QWidget>
-#include <QWidgetAction>
 
 class TrayIcon : public QSystemTrayIcon {
   Q_OBJECT
@@ -127,6 +125,22 @@ private:
    */
   void checkCurrentTimerItem();
 
+  /**
+   * @brief switchTimers When a timer ends setup the next appropriate timer
+   */
+  void switchTimers();
+
+  /**
+   * @brief controlsEnabledCheck Check if pause and stop controls should be
+   * enabled and enables or disables them
+   */
+  void controlsEnabledCheck(bool running);
+
+  /**
+   * @brief resetCounterView Resets the counter widget text to "00:00"
+   */
+  void resetCounterView();
+
   // Properties
   QMenu *trayIconMenu;
   QAction *workTimeMenuItem, *shortBreakMenuItem, *longBreakMenuItem,
@@ -136,7 +150,8 @@ private:
   QSettings settings;
   State m_state;
   QMap<State, int *> states;
-  int work, sbreak, lbreak, sbreakCycles, earlySeconds, ticks, secondsElapsed;
+  int work, sbreak, lbreak, sbreakCycles, sbreakCyclesCompleted, earlySeconds,
+      ticks, secondsRemaining;
   bool autostart;
 };
 

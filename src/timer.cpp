@@ -6,10 +6,22 @@ Timer::Timer(QObject *parent) : QObject(parent) {
 }
 
 void Timer::resetTimer() {
-  if (this->timer->isActive()) {
-    this->timer->stop();
-  }
-  timer->start(1000);
+  this->stopTimer();
+  this->timer->start(1000);
 }
 
 bool Timer::isRunning() { return this->timer->isActive(); }
+
+void Timer::stopTimer() {
+  if (this->timer->isActive()) {
+    this->timer->stop();
+  }
+}
+
+void Timer::togglePauseTimer(bool pause) {
+  if (pause) {
+    this->stopTimer();
+  } else {
+    this->resetTimer();
+  }
+}
