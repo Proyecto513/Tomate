@@ -1,6 +1,7 @@
 #ifndef TRAYICON_H
 #define TRAYICON_H
 
+#include "notification.h"
 #include "timer.h"
 #include <QAction>
 #include <QMap>
@@ -146,6 +147,7 @@ private:
   QAction *workTimeMenuItem, *shortBreakMenuItem, *longBreakMenuItem,
       *pauseMenuItem, *stopMenuItem, *settingsMenuItem, *quitMenuItem,
       *showTime;
+  Notification *notificationService;
   Timer *timer;
   QSettings settings;
   State m_state;

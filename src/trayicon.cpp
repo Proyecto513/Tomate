@@ -2,6 +2,7 @@
 #include "settings.h"
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QDebug>
 #include <QIcon>
 #include <QPixmap>
 
@@ -11,6 +12,7 @@ TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   this->secondsRemaining = 0;
   this->sbreakCyclesCompleted = 0;
   this->m_state = State::WorkTime;
+  this->notificationService = new Notification;
   restoreSettings();
   setupStates();
   setupTimer();
@@ -45,7 +47,7 @@ void TrayIcon::setupTimer() {
 void TrayIcon::setupMenu(QWidget *parent) {
   trayIconMenu = new QMenu(parent);
 
-  showTime = new QAction("00:00");
+  showTime = new QAction("00:00", this);
   showTime->setEnabled(false);
   if (this->autostart) {
     trayIconMenu->addAction(showTime);
@@ -185,11 +187,17 @@ void TrayIcon::switchTimers() {
   if (this->state() == TrayIcon::WorkTime) {
     if (sbreakCyclesCompleted++ == sbreakCycles) {
       sbreakCyclesCompleted = 0;
+      notificationService->sendMessage(tr("It's time for a longer break"),
+                                       tr("Time is up!"));
       startLongBreak();
     } else {
+      notificationService->sendMessage(tr("It's time for a little break"),
+                                       tr("Time is up!"));
       startShortBreak();
     }
   } else {
+    notificationService->sendMessage(tr("It's time to go back to work!"),
+                                     tr("Break is over"));
     startWorkTime();
   }
 }
@@ -204,4 +212,7 @@ void TrayIcon::resetCounterView() {
   checkCurrentTimerItem();
 }
 
-TrayIcon::~TrayIcon() {}
+TrayIcon::~TrayIcon() {
+  delete timer;
+  delete notificationService;
+}

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia
+QT       += core gui multimedia dbus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,12 +31,14 @@ SOURCES += \
         src/main.cpp \
         src/trayicon.cpp \
         src/timer.cpp \
-        src/settings.cpp
+        src/settings.cpp \
+    src/notification.cpp
 
 HEADERS += \
         src/trayicon.h \
         src/timer.h \
-        src/settings.h
+        src/settings.h \
+    src/notification.h
 
 FORMS += \
     src/settings.ui
