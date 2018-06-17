@@ -28,16 +28,16 @@ DEFINES += QAPPLICATION_CLASS=QApplication
 CONFIG += c++11
 
 SOURCES += \
-        src/main.cpp \
-        src/trayicon.cpp \
-        src/timer.cpp \
-        src/settings.cpp \
+    src/main.cpp \
+    src/trayicon.cpp \
+    src/timer.cpp \
+    src/settings.cpp \
     src/notification.cpp
 
 HEADERS += \
-        src/trayicon.h \
-        src/timer.h \
-        src/settings.h \
+    src/trayicon.h \
+    src/timer.h \
+    src/settings.h \
     src/notification.h
 
 FORMS += \

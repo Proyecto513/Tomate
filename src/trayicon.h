@@ -1,6 +1,7 @@
 #ifndef TRAYICON_H
 #define TRAYICON_H
 
+#include "enforcer.h"
 #include "notification.h"
 #include "timer.h"
 #include <QAction>

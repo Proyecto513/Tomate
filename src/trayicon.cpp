@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QIcon>
 #include <QPixmap>
+#include <QScreen>
 
 TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   this->autostart = false;

@@ -8,4 +8,8 @@
     <qresource prefix="/sounds">
         <file>assets/alarm.wav</file>
     </qresource>
+    <qresource prefix="/"/>
+    <qresource prefix="/qml">
+        <file>enforcer.qml</file>
+    </qresource>
 </RCC>
