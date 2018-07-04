@@ -25,6 +25,7 @@ public:
   explicit IdleCheck(QObject *parent = nullptr);
   bool isIdle();
   void check();
+  long getIdle();
 
 private:
   Display *dpy;

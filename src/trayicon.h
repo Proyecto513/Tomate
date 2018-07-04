@@ -172,7 +172,7 @@ private:
   State m_state;
   QMap<State, int *> states;
   int work, sbreak, lbreak, sbreakCycles, sbreakCyclesCompleted, earlySeconds,
-      ticks, secondsRemaining, monitoredSeconds;
+      ticks, secondsRemaining, monitoredSeconds, checkCycle;
   bool autostart, idleCheckEnabled;
 };
 

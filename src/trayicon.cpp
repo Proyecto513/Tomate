@@ -6,6 +6,7 @@
 #include <QIcon>
 #include <QPixmap>
 #include <QScreen>
+#include <cmath>
 
 TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   this->autostart = false;
@@ -113,6 +114,7 @@ void TrayIcon::setupIdleCheck() {
     connect(this->checker, &IdleCheck::idleChanged, this,
             &TrayIcon::idleToggle);
     this->monitoredSeconds = 0;
+    this->checkCycle = 600;
   } catch (const char *msg) {
     qDebug() << msg;
     this->idleCheckEnabled = false;
@@ -230,7 +232,7 @@ void TrayIcon::resetCounterView() {
 
 void TrayIcon::idleMonitor() {
   monitoredSeconds++;
-  if (this->monitoredSeconds == 300) {
+  if (this->monitoredSeconds == checkCycle) {
     checker->check();
     monitoredSeconds = 0;
   }
@@ -241,8 +243,14 @@ void TrayIcon::idleToggle(bool status) {
     notificationService->sendMessage(
         "We detected the system is idle, the timer will pause", "Idle alert");
     disconnect(timer, &Timer::timeout, this, &TrayIcon::tick);
+    this->ticks -= floor(checker->getIdle() / 1000);
+    if (this->ticks <= 0) {
+      this->ticks = 0;
+    }
+    checkCycle = 30;
   } else {
     connect(timer, &Timer::timeout, this, &TrayIcon::tick);
+    checkCycle = 600;
   }
 }
 

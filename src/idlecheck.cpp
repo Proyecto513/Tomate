@@ -38,6 +38,8 @@ void IdleCheck::setIdle(bool status) {
   }
 }
 
+long IdleCheck::getIdle() { return ssi->idle; }
+
 bool IdleCheck::isIdle() { return this->_idle; }
 
 IdleCheck::~IdleCheck() {
