@@ -149,6 +149,17 @@ private:
    */
   void setupIdleCheck();
 
+  /**
+   * @brief idleMonitor monitors the state of the user
+   */
+  void idleMonitor();
+
+  /**
+   * @brief idleToggle toggles the connection of the timer updating function
+   * @param status the status
+   */
+  void idleToggle(bool status);
+
   // Properties
   IdleCheck *checker;
   QMenu *trayIconMenu;
@@ -161,7 +172,7 @@ private:
   State m_state;
   QMap<State, int *> states;
   int work, sbreak, lbreak, sbreakCycles, sbreakCyclesCompleted, earlySeconds,
-      ticks, secondsRemaining, minutesElapsed;
+      ticks, secondsRemaining, monitoredSeconds;
   bool autostart, idleCheckEnabled;
 };
 

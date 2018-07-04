@@ -109,7 +109,10 @@ void TrayIcon::setupMenu(QWidget *parent) {
 void TrayIcon::setupIdleCheck() {
   try {
     checker = new IdleCheck();
-
+    connect(this->timer, &Timer::timeout, this, &TrayIcon::idleMonitor);
+    connect(this->checker, &IdleCheck::idleChanged, this,
+            &TrayIcon::idleToggle);
+    this->monitoredSeconds = 0;
   } catch (const char *msg) {
     qDebug() << msg;
     this->idleCheckEnabled = false;
@@ -223,6 +226,24 @@ void TrayIcon::controlsEnabledCheck(bool running) {
 void TrayIcon::resetCounterView() {
   showTime->setText("00:00");
   checkCurrentTimerItem();
+}
+
+void TrayIcon::idleMonitor() {
+  monitoredSeconds++;
+  if (this->monitoredSeconds == 300) {
+    checker->check();
+    monitoredSeconds = 0;
+  }
+}
+
+void TrayIcon::idleToggle(bool status) {
+  if (status) {
+    notificationService->sendMessage(
+        "We detected the system is idle, the timer will pause", "Idle alert");
+    disconnect(timer, &Timer::timeout, this, &TrayIcon::tick);
+  } else {
+    connect(timer, &Timer::timeout, this, &TrayIcon::tick);
+  }
 }
 
 TrayIcon::~TrayIcon() {
