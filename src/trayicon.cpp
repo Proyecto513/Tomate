@@ -18,6 +18,7 @@ TrayIcon::TrayIcon(QWidget *parent) : QSystemTrayIcon(parent) {
   setupStates();
   setupTimer();
   setupMenu(parent);
+  setupIdleCheck();
   checkCurrentTimerItem();
   setupTrayIcon();
 }
@@ -105,8 +106,19 @@ void TrayIcon::setupMenu(QWidget *parent) {
           &TrayIcon::controlsEnabledCheck);
 }
 
+void TrayIcon::setupIdleCheck() {
+  try {
+    checker = new IdleCheck();
+
+  } catch (const char *msg) {
+    qDebug() << msg;
+    this->idleCheckEnabled = false;
+  }
+}
+
 void TrayIcon::tick() {
   secondsRemaining = (*(states[m_state]) * 60) - ticks++;
+
   if (secondsRemaining == 0) {
     QSound::play(":/sounds/assets/alarm.wav");
     switchTimers();

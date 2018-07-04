@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia dbus
+QT       += core gui multimedia dbus x11extras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -32,16 +32,20 @@ SOURCES += \
     src/trayicon.cpp \
     src/timer.cpp \
     src/settings.cpp \
-    src/notification.cpp
+    src/notification.cpp \
+    src/idlecheck.cpp
 
 HEADERS += \
     src/trayicon.h \
     src/timer.h \
     src/settings.h \
-    src/notification.h
+    src/notification.h \
+    src/idlecheck.h
 
 FORMS += \
     src/settings.ui
 
 RESOURCES += \
     src/assets.qrc
+
+LIBS += -lX11 -lXss

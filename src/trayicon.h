@@ -1,7 +1,7 @@
 #ifndef TRAYICON_H
 #define TRAYICON_H
 
-#include "enforcer.h"
+#include "idlecheck.h"
 #include "notification.h"
 #include "timer.h"
 #include <QAction>
@@ -143,7 +143,14 @@ private:
    */
   void resetCounterView();
 
+  /**
+   * @brief setupIdleCheck sets up the idle check module wich requires X
+   * libraries
+   */
+  void setupIdleCheck();
+
   // Properties
+  IdleCheck *checker;
   QMenu *trayIconMenu;
   QAction *workTimeMenuItem, *shortBreakMenuItem, *longBreakMenuItem,
       *pauseMenuItem, *stopMenuItem, *settingsMenuItem, *quitMenuItem,
@@ -154,8 +161,8 @@ private:
   State m_state;
   QMap<State, int *> states;
   int work, sbreak, lbreak, sbreakCycles, sbreakCyclesCompleted, earlySeconds,
-      ticks, secondsRemaining;
-  bool autostart;
+      ticks, secondsRemaining, minutesElapsed;
+  bool autostart, idleCheckEnabled;
 };
 
 #endif // TRAYICON_H
